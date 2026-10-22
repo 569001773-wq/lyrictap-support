@@ -21,7 +21,7 @@
   let audioURL = '', fileName = '', active = 0, lines = [], duration = 0, current = 0;
   let error = $('.error-message');
   if (!error) { error = document.createElement('p'); error.className='error-message'; error.setAttribute('role','alert'); $('.export-row').after(error); }
-  const announce = (text) => {error.textContent = text || '';};
+  const announce = (text) => {error.classList.remove('is-success');error.textContent = text || '';};
   const example = $lyrics.value;
   function parse(text) {return text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map((text,id)=>({id,text,time:null}));}
   function save() {try {localStorage.setItem(key, JSON.stringify({lyrics:$lyrics.value,lines,active}));} catch (_) {}}
@@ -29,7 +29,7 @@
     try {
       const saved = JSON.parse(localStorage.getItem(key) || 'null');
       if (!saved || !Array.isArray(saved.lines) || typeof saved.lyrics !== 'string') return false;
-      $lyrics.value=saved.lyrics;
+      $lyrics.value=localStorage.getItem(key+'.draft') || saved.lyrics;
       lines=saved.lines.filter(x=>x && typeof x.text==='string').slice(0,3000).map((x,id)=>({id,text:x.text,time:Number.isFinite(x.time)&&x.time>=0?x.time:null}));
       active=Math.min(Math.max(0,Number(saved.active)||0),lines.length);
       return true;
@@ -97,7 +97,9 @@
       const url=URL.createObjectURL(new Blob([body+'\n'],{type:'text/plain;charset=utf-8'}));
       const a=document.createElement('a');a.href=url;a.download=(fileName||'lyrictap-lyrics')+'.'+format;document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),3000);
-      announce('Export complete. Need AI auto-sync or lyric videos? Try LyricTap on the App Store.');
+      announce('Export complete. Your synced lyric file is ready.');
+      error.classList.add('is-success');
+      const appLink=document.createElement('a');appLink.href='https://apps.apple.com/us/app/lyrictap-auto-sync-lyrics/id6789857221';appLink.target='_blank';appLink.rel='noopener noreferrer';appLink.textContent=' Try AI Auto-Sync and lyric videos in the iOS app →';error.appendChild(appLink);
     } catch(e){announce(e.message||'Export failed.');}
   }
   $drop.addEventListener('click',()=> $input.click());

@@ -7,3 +7,5 @@
 .audio-drop.is-dragover{outline:3px dashed #e56848;outline-offset:3px}.studio-shell .error-message{color:#b53220;font-weight:600;margin:12px 0}
 .lyric-row .timecode{font-variant-numeric:tabular-nums}.saved-status{font-size:.75rem;color:#555;margin-top:7px}
 @media(max-width:720px){.growth-cards{grid-template-columns:1fr}.growth-cards a{padding:20px}}
+
+.studio-shell .error-message.is-success{color:#267249}.studio-shell .error-message.is-success a{color:#267249;text-decoration:underline}

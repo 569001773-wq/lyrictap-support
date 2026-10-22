@@ -1,0 +1,9 @@
+
+.growth-links{padding:clamp(48px,8vw,112px) clamp(18px,5vw,84px);background:#f7f7f6;color:#131313}
+.growth-links .growth-head{max-width:800px;margin-bottom:30px}.growth-links .growth-head h2{font-size:clamp(2rem,5vw,4rem);margin:10px 0}.growth-links .growth-head p{line-height:1.65}
+.growth-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.growth-cards a{display:block;border:1px solid #ddd;border-radius:18px;color:#161616;text-decoration:none;background:white;padding:28px;transition:transform .2s,border-color .2s}
+.growth-cards a:hover{transform:translateY(-3px);border-color:#888}.growth-cards a span{color:#646464;letter-spacing:.08em;font-size:.72rem}.growth-cards a h3{font-size:clamp(1.25rem,2.4vw,2rem);margin:12px 0}.growth-cards a p{line-height:1.55;max-width:52ch}.growth-cards a b{display:block;margin-top:18px;color:#aa321e}.growth-more{margin-top:23px}.growth-more a{color:inherit;text-underline-offset:4px}
+.audio-drop.is-dragover{outline:3px dashed #e56848;outline-offset:3px}.studio-shell .error-message{color:#b53220;font-weight:600;margin:12px 0}
+.lyric-row .timecode{font-variant-numeric:tabular-nums}.saved-status{font-size:.75rem;color:#555;margin-top:7px}
+@media(max-width:720px){.growth-cards{grid-template-columns:1fr}.growth-cards a{padding:20px}}

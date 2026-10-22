@@ -1,21 +1,25 @@
-# LyricTap GitHub Pages source
+# LyricTap GitHub Pages
 
-The original Lyrics Studio is exported as static HTML, CSS and JavaScript with Next.js. Audio selection, playback, manual lyric timing and LRC/SRT/TXT export stay in the browser.
+The primary website is a static, SEO-friendly landing page with a free in-browser manual lyrics editor and original guides. Website: https://569001773-wq.github.io/lyrictap-support/
 
-Live website: https://569001773-wq.github.io/lyrictap-support/
+## Source of truth
+- `site-source/static/index.html`: canonical static landing/editor markup.
+- `site-source/static/studio.js`: browser-only music timing engine. No audio upload.
+- `site-source/static/growth.css` and `growth-pages.css`: site styles.
+- `site-source/static/guides/`, `tools/`, `ja/`, `zh/`: static content pages.
+- `site-source/static/sitemap.xml` and `llms.txt`.
+- `privacy/`, `support/`, and en/ja legal/support pages: preserved root-site assets.
 
-## Update the website
-
-Use Node.js 22 or later. From this directory, run:
-
+## Update and publish
+The old Next.js source remains for historical reference. Its output is **overridden** by the files in `site-source/static/` when you run:
 ```sh
+cd site-source
 npm ci
 npm run build
 node scripts/copy-export.mjs
 ```
+Commit both the canonical files in `site-source/static/` and generated root pages to `main`, because GitHub Pages serves the root branch output.
 
-Commit `site-source/` and the updated exported files in the repository root to `main`. The existing GitHub Pages branch deployment publishes them. The copy script preserves existing privacy/support pages, their stylesheet and favicon, and the existing 404 page.
+The free editor supports drag/drop, local resume of lyric timestamps (audio is not persisted), line timing, increasing timestamp validation, LRC/SRT/TXT exports and mobile tap controls. Automated time alignment and MP4 generation remain iOS-only features.
 
-`next.config.ts` sets `output: "export"`, `basePath: "/lyrictap-support"` and trailing slashes. The page's canonical URL and structured data use the GitHub Pages URL. No server, ChatGPT login, API key, database, or Cloudflare service is required.
-
-Migration source: Sites project `appgprj_6a89b1d0dab08191b226e8206aca67d6`, commit `c2ae866ed2ac3a48f4a3ae2506791e4dd5e11299`.
+Read `docs/SEARCH_GROWTH_SETUP.md` for Search Console/Bing and indexing verification.

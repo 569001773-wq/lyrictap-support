@@ -1,17 +1,24 @@
 # LyricTap
 
-LyricTap is an iPhone and iPad lyric sync app with free manual syncing and AI Auto-Sync.
+LyricTap is an iPhone and iPad lyric synchronization application. It makes editable line-timed lyrics, exports LRC/SRT/TXT files, and offers lyric video creation and optional AI Auto-Sync on iOS. The free browser studio uses **manual** syncing and processes selected audio locally. The browser studio does not upload audio or render MP4 videos.
 
-## Core capabilities
+## Official website and resources
+- [Free browser studio](https://569001773-wq.github.io/lyrictap-support/)
+- [Free online LRC maker](https://569001773-wq.github.io/lyrictap-support/tools/lrc-maker/)
+- [Complete lyric sync guide index](https://569001773-wq.github.io/lyrictap-support/guides/)
+- [Sync lyrics for Suno songs](https://569001773-wq.github.io/lyrictap-support/guides/suno-lyrics-sync/)
+- [How to make a lyric video](https://569001773-wq.github.io/lyrictap-support/guides/lyric-video-maker/)
+- [Lyrics to SRT guide](https://569001773-wq.github.io/lyrictap-support/guides/lyrics-to-srt/)
+- [LRC, SRT and ASS formats](https://569001773-wq.github.io/lyrictap-support/guides/lrc-vs-srt-vs-ass/)
+- [Japanese website](https://569001773-wq.github.io/lyrictap-support/ja/)
+- [Japanese sync guide](https://569001773-wq.github.io/lyrictap-support/ja/guides/kashi-douki/)
+- [Chinese website](https://569001773-wq.github.io/lyrictap-support/zh/)
+- [English support](https://569001773-wq.github.io/lyrictap-support/en/support/)
+- [Privacy](https://569001773-wq.github.io/lyrictap-support/en/privacy/)
+- [Apple App Store](https://apps.apple.com/us/app/lyrictap-auto-sync-lyrics/id6789857221)
 
-- Create and edit synchronized lyric timelines.
-- Export LRC, SRT, and TXT lyric files.
-- Create portrait or landscape lyric videos with three visual templates.
-- Sync English, Japanese, and Chinese songs.
-- Import supported audio files, including audio exported from Suno or Udio. LyricTap is not officially integrated with or affiliated with either service.
-- Use the free browser manual-sync studio locally without uploading audio or creating an account.
-
-## Official links
-
-- Website: https://569001773-wq.github.io/lyrictap-support/
-- App Store: https://apps.apple.com/us/app/lyrictap-auto-sync-lyrics/id6789857221
+## Accuracy notes
+- Browser: manual lyric timing, LRC/SRT/TXT, local audio processing, no account needed.
+- iOS/iPadOS app: separate optional AI Auto-Sync and lyric video workflow.
+- LyricTap is not affiliated with Suno or Udio; downloaded audio files can be imported manually.
+- Format support depends on the destination player or subtitle renderer.

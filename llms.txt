@@ -1,0 +1,17 @@
+# LyricTap
+
+LyricTap is an iPhone and iPad lyric sync app with free manual syncing and AI Auto-Sync.
+
+## Core capabilities
+
+- Create and edit synchronized lyric timelines.
+- Export LRC, SRT, and TXT lyric files.
+- Create portrait or landscape lyric videos with three visual templates.
+- Sync English, Japanese, and Chinese songs.
+- Import supported audio files, including audio exported from Suno or Udio. LyricTap is not officially integrated with or affiliated with either service.
+- Use the free browser manual-sync studio locally without uploading audio or creating an account.
+
+## Official links
+
+- Website: https://569001773-wq.github.io/lyrictap-support/
+- App Store: https://apps.apple.com/us/app/lyrictap-auto-sync-lyrics/id6789857221

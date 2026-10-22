@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build --webpack",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "check:static": "node scripts/check-static.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
@@ -35,5 +36,5 @@
     "wrangler": "4.92.0"
   },
   "type": "module",
-  "displayName": "LyricTap \u2014 Lyrics Studio"
+  "displayName": "LyricTap — Lyrics Studio"
 }

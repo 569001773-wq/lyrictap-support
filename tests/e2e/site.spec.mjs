@@ -12,6 +12,7 @@ const fixturePath=join(mkdtempSync(join(tmpdir(),'lyrictap-test-')),'test-song.w
 async function setup(page,text='First line\n副歌\n君の歌\n副歌'){
  await page.goto(base+'#studio');await expect(page.locator('[data-save]')).toBeVisible();
  await page.locator('textarea').fill(text);await page.locator('.build-button').click();
+ await expect(page.locator('.lyric-row p').first()).toHaveText(text.split(/\r\n?|\n/).find(x=>x.trim()).trim());
 }
 async function choose(page,file=fixture){await page.locator('input[type=file]').setInputFiles(file===fixture?fixturePath:file);await expect(page.locator('.audio-drop small')).toContainText('Ready to play');}
 async function setTime(page,i,time){const field=page.getByLabel(`Timestamp for line ${i}`,{exact:true});await field.fill(time);await field.press('Tab');}

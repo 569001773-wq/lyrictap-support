@@ -22,3 +22,8 @@ LyricTap is an iPhone and iPad lyric synchronization application. It makes edita
 - iOS/iPadOS app: separate optional AI Auto-Sync and lyric video workflow.
 - LyricTap is not affiliated with Suno or Udio; downloaded audio files can be imported manually.
 - Format support depends on the destination player or subtitle renderer.
+
+## Website privacy
+- https://569001773-wq.github.io/lyrictap-support/website-privacy/ — browser-only editing, local storage and optional analytics status.
+
+AI Auto-Sync uses paid credits in the iOS app. The free browser tool performs manual line timing only. No official Suno or Udio affiliation. This file is a navigation aid, not an indexing or citation guarantee.

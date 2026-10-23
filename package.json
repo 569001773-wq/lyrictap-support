@@ -1,0 +1,22 @@
+{
+  "name": "lyrictap-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node site-source/scripts/build-static.mjs",
+    "sync:root": "node site-source/scripts/copy-export.mjs",
+    "check:static": "node site-source/scripts/check-static.mjs",
+    "test:unit": "node --test tests/*.test.mjs",
+    "test:e2e": "playwright test",
+    "check": "npm run build && npm run check:static && npm run test:unit && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.1",
+    "lighthouse": "13.0.1",
+    "playwright": "1.56.1"
+  }
+}

@@ -1,0 +1,17 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {parseLyrics,toClock,toSRT,parseClock,validateTimed,exportLyrics} from '../site-source/static/formats.js';
+test('Chinese, Japanese, English and repeated choruses preserve performed order',()=>{assert.deepEqual(parseLyrics('\uFEFF第一句\r\n君の歌\r\nChorus\nChorus\n\n').map(x=>x.text),['第一句','君の歌','Chorus','Chorus']);});
+for(const [n,out] of [[0,'00:00.00'],[59.999,'01:00.00'],[3600,'60:00.00'],[123.456,'02:03.46']])test(`LRC ${n} rounds without invalid seconds`,()=>assert.equal(toClock(n),out));
+for(const [n,out] of [[0,'00:00:00,000'],[59.9996,'00:01:00,000'],[3600.001,'01:00:00,001']])test(`SRT ${n} formats hours and milliseconds`,()=>assert.equal(toSRT(n),out));
+test('timestamp input supports long tracks and 1–3 decimal places',()=>{assert.equal(parseClock('120:12.345'),7212.345);assert.equal(parseClock('00:00.1'),.1);});
+for(const text of ['1:60','NaN','-1:00','Infinity','00:01.1234',''])test(`timestamp rejects ${JSON.stringify(text)}`,()=>assert.throws(()=>parseClock(text)));
+for(const [name,times] of [['missing',[null,2]],['NaN',[NaN,2]],['negative',[-1,2]],['duplicate',[1,1]],['reversed',[2,1]],['rounding collision',[1.001,1.002]],['past duration',[1,11]],['at duration',[1,10]]])test(`rejects ${name}`,()=>assert.throws(()=>validateTimed(times.map(time=>({text:'歌',time})),10)));
+test('valid complete LRC text uses exact centiseconds',()=>assert.equal(exportLyrics('lrc',[{text:'中文',time:1.23},{text:'日本語',time:2.34}],10),'[00:01.23]中文\n[00:02.34]日本語\n'));
+test('TXT needs no audio and no timestamps',()=>assert.equal(exportLyrics('txt',parseLyrics('A\nA\n歌')),'A\nA\n歌\n'));
+test('SRT short intervals stay positive and do not overlap',()=>assert.equal(exportLyrics('srt',[{text:'A',time:1},{text:'B',time:1.01}],2),'1\n00:00:01,000 --> 00:00:01,009\nA\n\n2\n00:00:01,010 --> 00:00:02,000\nB\n'));
+test('last SRT caption never exceeds song end',()=>assert.match(exportLyrics('srt',[{text:'last',time:9.99}],10),/00:00:09,990 --> 00:00:10,000/));
+test('unknown duration gives final caption 4 seconds',()=>assert.match(exportLyrics('srt',[{text:'last',time:10}]),/00:00:10,000 --> 00:00:14,000/));
+test('empty input and project limits fail without silently truncating',()=>{assert.throws(()=>parseLyrics(' \n'));assert.throws(()=>parseLyrics('A'.repeat(500001)));assert.throws(()=>parseLyrics('A\n'.repeat(3001)));assert.equal(parseLyrics('A\n'.repeat(3000)).length,3000);});
+test('unsupported export format rejected',()=>assert.throws(()=>exportLyrics('mp4',[{text:'A',time:0}],10)));
+test('1000 captions have valid intervals within duration',()=>{const lines=Array.from({length:1000},(_,i)=>({text:`副歌 ${i}`,time:i*.1}));const out=exportLyrics('srt',lines,101);const parts=out.trim().split('\n\n');assert.equal(parts.length,1000);for(const p of parts){const [a,b]=p.split('\n')[1].split(' --> ');assert.ok(a<b);}});

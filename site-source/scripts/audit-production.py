@@ -37,8 +37,8 @@ except urllib.error.HTTPError as e:
 except Exception as e:
     robots_status = str(e)
 failed = [r for r in results if not r.get('matches_build') or r.get('status') != 200]
-# GitHub Pages returns the custom 404.html body with a 404 status when directly requested;
-# all canonical pages and normal assets must return 200.
+# The unknown-path probe above must return 404; canonical pages and directly
+# requested assets (including the 404.html template itself) must return 200.
 report = {'files_checked': len(results), 'failed': failed, 'missing_path_status': missing_status,
           'origin_robots_status': robots_status, 'results': results,
           'note': 'HTTP/content verification is not proof of search indexation.'}

@@ -47,21 +47,22 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Migrate the existing branch-root Pages source only after every check has passed.
+      # Deployment requires the owner to select Settings → Pages → Source → GitHub Actions.
       - uses: actions/github-script@v7
         with:
           script: |
             const {owner,repo} = context.repo;
             const {data} = await github.rest.repos.getPages({owner,repo});
             if (data.build_type !== 'workflow') {
-              await github.rest.repos.updateInformationAboutPagesSite({owner,repo,build_type:'workflow'});
+              core.setFailed('Owner setup required: Settings → Pages → Build and deployment → Source → GitHub Actions. The Actions token cannot change this administration setting.');
+              return;
             }
       - uses: actions/configure-pages@v5
       - uses: actions/deploy-pages@v4
         id: deployment
   production-smoke:
-    needs: deploy
-    if: github.ref == 'refs/heads/main'
+    needs: [verify, deploy]
+    if: always() && github.ref == 'refs/heads/main' && needs.verify.result == 'success'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -70,6 +71,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npm run build
+      - run: python3 site-source/scripts/audit-production.py
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
         env:
@@ -81,4 +84,5 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            artifacts/production-audit.json
           retention-days: 14

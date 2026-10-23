@@ -53,3 +53,9 @@ Web-to-App-Store click rate = consented App Store click events / consented pagev
 - https://developers.google.com/search/docs/appearance/ai-features
 - https://help.suno.com/en/articles/13926081
 - https://help.udio.com/en/articles/12683565-changes-associated-with-the-universal-music-group-umg-partnership
+
+## GitHub Pages source authorization blocker
+
+The tested code was published by the existing branch-root Pages workflow. The new Actions workflow passed all checks, but changing Pages `build_type` to `workflow` returned HTTP 403 (`pages=write, administration=write` required). `GITHUB_TOKEN` cannot obtain repository administration permission. The connected browser is not signed in to GitHub Settings.
+
+The owner must select Settings → Pages → Build and deployment → Source → GitHub Actions once, then rerun the workflow. After this switch, `_site/` becomes the production artifact and the `needs: verify` gate enforces checks before every deployment. Until that switch, the legacy automatic publisher can still publish main independently of CI; do not describe the deployment gate as active. No token or broader security access was created.

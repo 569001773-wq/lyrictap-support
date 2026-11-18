@@ -210,7 +210,7 @@ test('guides, tools, privacy and support use the shared LyricTap cream/charcoal/
       return {
         page:get('body'),
         header:get('.top')??get('.site-header'),
-        content:get('.article section')??get('.language-section'),
+        content:get('.article section:not(.feature-note)')??get('.language-section'),
         goldButton:get('.nav .cta'),
         linkCount:document.querySelectorAll('a').length,
         overflow:document.documentElement.scrollWidth>innerWidth+1

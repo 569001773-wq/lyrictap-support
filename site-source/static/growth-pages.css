@@ -48,9 +48,15 @@ a:focus-visible{outline:3px solid #79511a;outline-offset:4px}
   content:"";
   display:block;
   width:34px;height:34px;flex:0 0 34px;
-  border:11px solid var(--lt-night);
+  border:0;
   border-radius:50%;
-  background:var(--lt-gold);
+  background:
+    linear-gradient(#f7f4ef,#f7f4ef) 9px 14px/2px 7px no-repeat,
+    linear-gradient(#f7f4ef,#f7f4ef) 13px 11px/2px 13px no-repeat,
+    linear-gradient(var(--lt-gold),var(--lt-gold)) 17px 8px/2px 19px no-repeat,
+    linear-gradient(#f7f4ef,#f7f4ef) 21px 11px/2px 13px no-repeat,
+    linear-gradient(#f7f4ef,#f7f4ef) 25px 14px/2px 7px no-repeat,
+    var(--lt-night);
 }
 .nav .cta{
   border:1px solid var(--lt-gold);

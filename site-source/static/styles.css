@@ -53,8 +53,14 @@ a:focus-visible{outline:3px solid #80501c;outline-offset:4px}
 .brand-dot{
   width:34px;height:34px;flex:none;
   display:inline-block;
-  border:11px solid var(--night);
-  background:var(--accent);
+  border:0;
+  background:
+    linear-gradient(#f7f4ef,#f7f4ef) 9px 14px/2px 7px no-repeat,
+    linear-gradient(#f7f4ef,#f7f4ef) 13px 11px/2px 13px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) 17px 8px/2px 19px no-repeat,
+    linear-gradient(#f7f4ef,#f7f4ef) 21px 11px/2px 13px no-repeat,
+    linear-gradient(#f7f4ef,#f7f4ef) 25px 14px/2px 7px no-repeat,
+    var(--night);
   border-radius:50%;
 }
 .site-header nav{display:flex;gap:26px}

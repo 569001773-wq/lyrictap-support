@@ -91,9 +91,51 @@ test('Space types in textarea without stamping; TXT works before timing',async({
 test('blocked local storage warns but editor remains usable',async({page})=>{
  await page.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('Denied','SecurityError');};});await setup(page,'A');await expect(page.locator('.save-status')).toContainText('cannot save progress');await expect(page.getByRole('button',{name:'TXT',exact:true})).toBeEnabled();
 });
-test('optional analytics is off and App Store attribution is not invented',async({page})=>{
+test('new visitors send no optional telemetry and store links follow published settings',async({page})=>{
  const external=[];page.on('request',r=>{if(/^https?:/.test(r.url())&&!r.url().includes('127.0.0.1')&&!r.url().includes('569001773-wq.github.io'))external.push(r.url());});await page.goto(base);
- await expect(page.locator('[data-campaign]').first()).toHaveAttribute('data-campaign',/^web_en_/);expect(await page.locator('[data-campaign]').first().getAttribute('href')).not.toContain('pt=');expect(external).toEqual([]);
+ const link=page.locator('[data-campaign]').first();
+ await expect(link).toHaveAttribute('data-campaign',/^web_en_/);
+ const token=await page.evaluate(()=>window.LYRICTAP_CONFIG.appleProviderToken);
+ const href=new URL(await link.getAttribute('href'));
+ expect(href.searchParams.get('pt')).toBe(token||null);
+ expect(external).toEqual([]);
+});
+
+test('App Store campaigns distinguish every marketing language and topic',async({page},testInfo)=>{
+ const campaigns=new Map(),audit=[];
+ for(const route of routes.slice(0,10)){
+  await page.goto(base+route);
+  const data=await page.evaluate(()=>({language:document.documentElement.lang,token:window.LYRICTAP_CONFIG.appleProviderToken,links:[...document.querySelectorAll('a[href^="https://apps.apple.com/"]')].map(a=>({href:a.href,campaign:a.dataset.campaign}))}));
+  expect(data.links.length).toBeGreaterThan(0);
+  for(const link of data.links){
+   expect(link.campaign).toMatch(new RegExp('^web_'+data.language.split('-')[0]+'_'));
+   expect(link.campaign.length).toBeLessThanOrEqual(30);
+   expect(campaigns.has(link.campaign),'distinct page and placement: '+link.campaign).toBe(false);
+   campaigns.set(link.campaign,route);
+   const url=new URL(link.href);expect(url.pathname).toContain('id6789857221');
+   const storefront={en:'us',ja:'jp','zh-Hans':'cn'}[data.language];
+   expect(url.pathname.split('/')[1]).toBe(storefront);
+   if(data.token){expect(url.searchParams.get('pt')).toBe(data.token);expect(url.searchParams.get('ct')).toBe(link.campaign);expect(url.searchParams.get('mt')).toBe('8');}
+   else {expect(url.searchParams.has('pt')).toBe(false);expect(url.searchParams.has('ct')).toBe(false);}
+  }
+  audit.push({route:base+route,...data});
+ }
+ await testInfo.attach('app-store-campaigns',{body:Buffer.from(JSON.stringify(audit,null,2)),contentType:'application/json'});
+});
+
+test('consented editor actions emit the four configured events without private data',async({page})=>{
+ const events=[];
+ // Isolated adapter fixture: never enables or sends telemetry to a production property.
+ await page.route('**/site-config.js',r=>r.fulfill({contentType:'text/javascript',body:'window.LYRICTAP_CONFIG={analytics:{enabled:true,domain:"test.invalid",endpoint:"https://plausible.io/api/event"},appleProviderToken:""};'}));
+ await page.route('https://plausible.io/api/event',r=>{events.push(JSON.parse(r.request().postData()));return r.fulfill({status:202});});
+ await page.goto(base);
+ await page.getByRole('button',{name:'Analytics preferences',exact:true}).click();await page.getByRole('button',{name:'Allow',exact:true}).click();
+ await page.locator('textarea').fill('PRIVATE_ACCEPTANCE_LYRIC');await page.locator('.build-button').click();await choose(page);
+ const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'TXT',exact:true}).click()]);expect(await readFile(await download.path(),'utf8')).toBe('PRIVATE_ACCEPTANCE_LYRIC\n');
+ const app=page.locator('a[data-campaign]').first();await app.evaluate(a=>a.addEventListener('click',e=>e.preventDefault(),{once:true}));await app.click();
+ await expect.poll(()=>[...new Set(events.map(e=>e.name))].sort()).toEqual(['App Store click','Editor used','Export generated','Timeline built','pageview'].sort());
+ expect(JSON.stringify(events)).not.toContain('PRIVATE_ACCEPTANCE_LYRIC');expect(events.find(e=>e.name==='Export generated').props.format).toBe('txt');
+ expect(events.find(e=>e.name==='App Store click').props.campaign).toMatch(/^web_en_/);
 });
 test('keyboard access and WCAG checks on home, guides and languages',async({page})=>{
  for(const route of ['','ja/','zh/','guides/lyrics-to-srt/']){await page.goto(base+route);const result=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();expect(result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}))).toEqual([]);}
@@ -101,10 +143,15 @@ test('keyboard access and WCAG checks on home, guides and languages',async({page
 });
 test('configured analytics requires opt-in and strips all user content',async({page})=>{
  const events=[];
- await page.route('**/site-config.js',r=>r.fulfill({contentType:'text/javascript',body:'window.LYRICTAP_CONFIG={analytics:{enabled:true,domain:"test.invalid",endpoint:"https://plausible.io/api/event"},appleProviderToken:"123456"};'}));
+ const settings=JSON.parse(await readFile(new URL('../../site.config.json',import.meta.url),'utf8'));
+ settings.analytics={enabled:true,domain:'test.invalid',endpoint:'https://plausible.io/api/event'};
+ await page.route('**/site-config.js',r=>r.fulfill({contentType:'text/javascript',body:'window.LYRICTAP_CONFIG='+JSON.stringify(settings)+';'}));
  await page.route('https://plausible.io/api/event',r=>{events.push(JSON.parse(r.request().postData()));return r.fulfill({status:202,headers:{'access-control-allow-origin':'*'}});});
  await page.goto(base+'?private-lyrics=SECRET#studio');await expect(page.getByRole('button',{name:'Analytics preferences',exact:true})).toBeVisible();expect(events).toEqual([]);
- const app=page.locator('a[data-campaign]').first();expect(await app.getAttribute('href')).toContain('pt=123456');expect(await app.getAttribute('href')).toContain('ct=web_en_');
+ const app=page.locator('a[data-campaign]').first();
+ const url=new URL(await app.getAttribute('href'));
+ expect(url.searchParams.get('pt')).toBe(settings.appleProviderToken||null);
+ if(settings.appleProviderToken)expect(url.searchParams.get('ct')).toMatch(/^web_en_/);
  await page.getByRole('button',{name:'Analytics preferences',exact:true}).click();await page.getByRole('button',{name:'Allow',exact:true}).click();await expect.poll(()=>events.length).toBe(1);
  await page.evaluate(()=>document.dispatchEvent(new CustomEvent('lyrictap:metric',{detail:{name:'Export generated',format:'lrc',lyrics:'SECRET',filename:'private.wav',audio:'SECRET'}})));
  await expect.poll(()=>events.length).toBe(2);expect(JSON.stringify(events)).not.toContain('SECRET');expect(JSON.stringify(events)).not.toContain('private.wav');expect(events[1].props.format).toBe('lrc');

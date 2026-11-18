@@ -7,7 +7,9 @@ import {spawnSync} from 'node:child_process';
 test('production build ignores legacy Next output, preserves source and emits only site assets',async()=>{
  const temp=await mkdtemp(join(tmpdir(),'lyrictap-build-'));
  try{
-  await cp(new URL('../site-source/',import.meta.url),join(temp,'site-source'),{recursive:true});await cp(new URL('../site.config.json',import.meta.url),join(temp,'site.config.json'));
+  await cp(new URL('../site-source/',import.meta.url),join(temp,'site-source'),{recursive:true});
+  // This fixture tests the unconfigured build independently of the live property's settings.
+  await writeFile(join(temp,'site.config.json'), JSON.stringify({analytics:{enabled:false}}));
   await mkdir(join(temp,'site-source/legacy-next/out'),{recursive:true});await writeFile(join(temp,'site-source/legacy-next/out/index.html'),'POISONED NEXT EXPORT');
   const before=await readFile(join(temp,'site-source/static/index.html'),'utf8');
   const built=spawnSync(process.execPath,['site-source/scripts/build-static.mjs'],{cwd:temp,encoding:'utf8'});assert.equal(built.status,0,built.stderr);

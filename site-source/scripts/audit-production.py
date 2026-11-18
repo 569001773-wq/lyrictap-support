@@ -17,8 +17,18 @@ def check(file):
     except Exception as e:
         return {'url': url, 'error': str(e), 'matches_build': False}
 
-# version.json is generated with the build commit only by artifact deployments.
-# The legacy branch copy intentionally has no version marker.
+expected_version = json.loads((root / 'version.json').read_text())
+try:
+    version_response = urllib.request.urlopen(base + 'version.json?deployment_check=' + commit, timeout=30)
+    deployed_version = json.loads(version_response.read())
+    version_matches = version_response.status == 200 and deployed_version == expected_version
+    version_error = None
+except Exception as e:
+    deployed_version = None
+    version_matches = False
+    version_error = str(e)
+
+# Require the artifact's commit marker as well as every published page/asset.
 files = [p for p in root.rglob('*') if p.is_file() and p.name not in ['version.json', '.nojekyll']]
 with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
     results = list(executor.map(check, files))
@@ -40,10 +50,12 @@ failed = [r for r in results if not r.get('matches_build') or r.get('status') !=
 # The unknown-path probe above must return 404; canonical pages and directly
 # requested assets (including the 404.html template itself) must return 200.
 report = {'files_checked': len(results), 'failed': failed, 'missing_path_status': missing_status,
+          'expected_version': expected_version, 'deployed_version': deployed_version,
+          'version_matches': version_matches, 'version_error': version_error,
           'origin_robots_status': robots_status, 'results': results,
           'note': 'HTTP/content verification is not proof of search indexation.'}
 pathlib.Path('artifacts').mkdir(exist_ok=True)
 pathlib.Path('artifacts/production-audit.json').write_text(json.dumps(report, indent=2))
 print(json.dumps({k:v for k,v in report.items() if k != 'results'}, indent=2))
-if failed or missing_status != 404:
+if failed or missing_status != 404 or not version_matches:
     raise SystemExit(1)

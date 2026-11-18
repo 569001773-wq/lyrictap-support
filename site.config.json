@@ -4,7 +4,7 @@
     "domain": "",
     "endpoint": "https://plausible.io/api/event"
   },
-  "appleProviderToken": "",
+  "appleProviderToken": "129038940",
   "searchConsoleVerification": "",
   "bingVerification": ""
 }

@@ -11,7 +11,7 @@ The build emits plain crawlable HTML, self canonicals, reciprocal English/Japane
 
 ## Google Search Console / Bing Webmaster Tools
 
-These require a signed-in authorized owner. Both showed unauthenticated landing pages during the 2026-10-23 check, so ownership verification, sitemap submission and URL inspection were not completed.
+On 2026-11-18 the Google account available in the browser lacked access to this URL-prefix property. The Search Console API also returned HTTP 403 for insufficient scopes. Confirm the intended owner before publishing an account-specific proof. Bing Webmaster Tools requires a signed-in account for the dashboard and sitemap submission.
 
 1. Create/select the URL-prefix property for the exact canonical project URL above.
 2. Put the actual Google or Bing meta verification token in `site.config.json` (`searchConsoleVerification` or `bingVerification`). The builder injects the public proof tag into the homepage. Do not invent tokens.
@@ -20,7 +20,7 @@ These require a signed-in authorized owner. Both showed unauthenticated landing 
 
 ## Analytics choice and current status
 
-**Chosen provider: Plausible. Current production setting: disabled; no real account/domain is connected.** There are no measured traffic or conversion numbers from this adapter yet. No paid plan was purchased and no account was created.
+**Chosen provider: Plausible. Current production setting: disabled; no verified Plausible property is configured. The dashboard required sign-in on 2026-11-18.** There are no measured traffic or conversion numbers from this adapter yet. No paid plan was purchased and no account was created.
 
 The integration uses Plausible's Events API with opt-in consent, no tracking cookies, no arbitrary query strings and no audio/lyric content. It respects Do Not Track and Global Privacy Control. When enabled, users can grant or withdraw consent via the footer preferences dialog. The local consent preference and lyric drafts remain separate.
 
@@ -38,9 +38,9 @@ Recorded after consent: canonical page URL, referring **site origin** (not the f
 
 ## Apple App Store attribution
 
-Every marketing download link has a stable language/page/placement campaign identifier. The adapter adds `pt`, `ct` and `mt=8` only when `appleProviderToken` is configured. The token is currently **empty**, so valid App Store destination links remain functional but install attribution is not yet enabled.
+Every marketing download link has a stable language/page/placement campaign identifier. The adapter adds `pt`, `ct` and `mt=8` only when `appleProviderToken` is configured. On 2026-11-18 the signed-in LyricTap campaign generator issued a public link for app 6789857221 and campaign web_en_home_1. The website now uses its provider token. All three storefronts resolve to the same app ID.
 
-Generate one real campaign link in App Store Connect Analytics first; copy its actual provider token (`pt`) into `appleProviderToken`. Apple states that this token cannot be invented. The same provider token is reused across campaigns. Use the page/placement campaign tokens to distinguish the English home, Japanese page, Chinese page, tutorials and post-export CTA. Verify campaigns in App Store Connect; reporting thresholds and delays apply.
+The same provider token is reused across campaigns. Use the page/placement campaign tokens to distinguish the English home, Japanese page, Chinese page, tutorials and post-export CTA. Open Acquisition → Campaigns in App Store Connect to read actual results. On 2026-11-18 the dashboard had insufficient campaign data in its displayed reporting period. Apple requires first-time downloads from at least five distinct users before a campaign appears.
 
 Web-to-App-Store click rate = consented App Store click events / consented pageviews for the same page and period. Installs and purchases must come from App Store Connect campaign reports. Do not multiply clicks by an assumed conversion rate or mix consented and total denominators.
 
@@ -54,8 +54,10 @@ Web-to-App-Store click rate = consented App Store click events / consented pagev
 - https://help.suno.com/en/articles/13926081
 - https://help.udio.com/en/articles/12683565-changes-associated-with-the-universal-music-group-umg-partnership
 
-## GitHub Pages source authorization blocker
+## Search engine notifications
 
-The tested code was published by the existing branch-root Pages workflow. The new Actions workflow passed all checks, but changing Pages `build_type` to `workflow` returned HTTP 403 (`pages=write, administration=write` required). `GITHUB_TOKEN` cannot obtain repository administration permission. The connected browser is not signed in to GitHub Settings.
+This project hosts an IndexNow proof file under the project URL. Its scope is limited to the LyricTap directory on GitHub Pages. After deploying a changed page, submit its full canonical URL with the live proof file as the IndexNow keyLocation. HTTP 200 confirms receipt. HTTP 202 means verification is pending. Check crawl and index status separately in Bing Webmaster Tools.
 
-The owner must select Settings → Pages → Build and deployment → Source → GitHub Actions once, then rerun the workflow. After this switch, `_site/` becomes the production artifact and the `needs: verify` gate enforces checks before every deployment. Until that switch, the legacy automatic publisher can still publish main independently of CI; do not describe the deployment gate as active. No token or broader security access was created.
+## Deployment
+
+Pages Source was switched to GitHub Actions. Only the verified main artifact is deployed. Production checks compare the served commit marker, pages and assets and exercise the editor on desktop Chromium and mobile WebKit.

@@ -1,0 +1,3 @@
+# Keep the published legal and support HTML byte-identical to its SHA-256 baseline.
+**/privacy/index.html text eol=lf
+**/support/index.html text eol=lf

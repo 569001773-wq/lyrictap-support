@@ -190,3 +190,37 @@ test('English homepage visibly labels vocal and instrumental separation',async({
   await expect(page.locator('#new-features .latest-card h3').filter({hasText:'Vocal & Instrumental Separation'})).toBeVisible();
   await expect(page.locator('#app .feature-card').filter({hasText:'Vocal & Instrumental Separation'})).toContainText('full-song sync');
 });
+
+// The entire static site shares the English home design system, not just marketing homepages.
+test('guides, tools, privacy and support use the shared LyricTap cream/charcoal/amber palette',async({page})=>{
+  const routes=[
+    'guides/','guides/lrc-vs-srt-vs-ass/','guides/lyric-video-maker/',
+    'guides/lyrics-to-srt/','guides/suno-lyrics-sync/',
+    'tools/lrc-maker/','ja/guides/kashi-douki/','website-privacy/',
+    'privacy/','en/privacy/','ja/privacy/',
+    'support/','en/support/','ja/support/'
+  ];
+  for(const route of routes){
+    await page.goto(base+route);
+    const values=await page.evaluate(()=>{
+      const get=(sel)=>{
+        const el=document.querySelector(sel);
+        return el?getComputedStyle(el).backgroundColor:null;
+      };
+      return {
+        page:get('body'),
+        header:get('.top')??get('.site-header'),
+        content:get('.article section')??get('.language-section'),
+        goldButton:get('.nav .cta'),
+        linkCount:document.querySelectorAll('a').length,
+        overflow:document.documentElement.scrollWidth>innerWidth+1
+      };
+    });
+    expect(values.page,route+' cream body').toBe('rgb(243, 239, 231)');
+    expect(values.header,route+' cream header').toBe('rgb(243, 239, 231)');
+    expect(values.content,route+' white content card').toBe('rgb(255, 253, 250)');
+    if(values.goldButton)expect(values.goldButton,route+' amber CTA').toBe('rgb(244, 169, 62)');
+    expect(values.linkCount,route+' links').toBeGreaterThan(3);
+    expect(values.overflow,route+' horizontal overflow').toBe(false);
+  }
+});

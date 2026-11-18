@@ -1,6 +1,6 @@
 # LyricTap
 
-LyricTap is an iPhone and iPad lyric synchronization application. It makes editable line-timed lyrics, exports LRC/SRT/TXT files, and offers lyric video creation and optional AI Auto-Sync on iOS. The free browser studio uses **manual** syncing and processes selected audio locally. The browser studio does not upload audio or render MP4 videos.
+LyricTap is an iPhone and iPad lyric synchronization application. It makes editable line-timed lyrics, offers full-song AI Auto-Sync, multilingual AI lyric translation, bilingual LRC/SRT/TXT and video export, and separated vocal/instrumental track downloads on iOS. The free browser studio uses **manual** syncing and processes selected audio locally. The browser studio does not upload audio or render MP4 videos.
 
 ## Official website and resources
 - [Free browser studio](https://569001773-wq.github.io/lyrictap-support/)
@@ -19,7 +19,10 @@ LyricTap is an iPhone and iPad lyric synchronization application. It makes edita
 
 ## Accuracy notes
 - Browser: manual lyric timing, LRC/SRT/TXT, local audio processing, no account needed.
-- iOS/iPadOS app: separate optional AI Auto-Sync and lyric video workflow.
+- iOS/iPadOS app: full-song AI Auto-Sync uses paid credits; AI translation becomes available for successful full AI syncs, with editable line translations and no additional AI sync credit for translating.
+- iOS/iPadOS app: original, translated or bilingual lyric files; lyric videos in 9:16, 16:9, 1:1, 4:5 and 3:4 with configurable lyric colors and outlines.
+- iOS/iPadOS app: separate vocal and instrumental track downloads after full AI sync, before temporary links expire.
+- Player and ordinary videos show line-by-line sync; manual word timings are for original-language ASS/Enhanced LRC file export.
 - LyricTap is not affiliated with Suno or Udio; downloaded audio files can be imported manually.
 - Format support depends on the destination player or subtitle renderer.
 

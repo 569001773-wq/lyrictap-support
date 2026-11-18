@@ -157,3 +157,28 @@ test('configured analytics requires opt-in and strips all user content',async({p
  await expect.poll(()=>events.length).toBe(2);expect(JSON.stringify(events)).not.toContain('SECRET');expect(JSON.stringify(events)).not.toContain('private.wav');expect(events[1].props.format).toBe('lrc');
  await page.getByRole('button',{name:'Analytics preferences',exact:true}).click();await page.getByRole('button',{name:'Do not allow',exact:true}).click();await page.evaluate(()=>document.dispatchEvent(new CustomEvent('lyrictap:metric',{detail:{name:'Editor used'}})));expect(events.length).toBe(2);
 });
+
+// The localized marketing home pages intentionally use the same colors as the English home.
+test('Japanese and Chinese home pages share the English brand palette and gallery',async({page})=>{
+  for(const locale of ['zh/','ja/']){
+    await page.goto(base+locale);
+    await expect(page.locator('.hero h1')).toBeVisible();
+    await expect(page.locator('.localized-gallery img')).toHaveCount(3);
+    const theme=await page.evaluate(()=>({
+      body:getComputedStyle(document.body).backgroundColor,
+      hero:getComputedStyle(document.querySelector('.hero')).backgroundColor,
+      features:getComputedStyle(document.querySelector('.app-updates')).backgroundColor,
+      button:getComputedStyle(document.querySelector('.hero-actions .action')).backgroundColor,
+      featureHeading:getComputedStyle(document.querySelector('.app-updates h2')).color,
+      horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1
+    }));
+    expect(theme).toMatchObject({
+      body:'rgb(243, 239, 231)',
+      hero:'rgb(243, 239, 231)',
+      features:'rgb(21, 21, 21)',
+      button:'rgb(244, 169, 62)',
+      featureHeading:'rgb(247, 244, 239)',
+      horizontalOverflow:false
+    });
+  }
+});

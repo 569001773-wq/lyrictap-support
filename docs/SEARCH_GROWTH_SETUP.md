@@ -11,7 +11,7 @@ The build emits plain crawlable HTML, self canonicals, reciprocal English/Japane
 
 ## Google Search Console / Bing Webmaster Tools
 
-On 2026-11-18 the Google account available in the browser lacked access to this URL-prefix property. The Search Console API also returned HTTP 403 for insufficient scopes. Confirm the intended owner before publishing an account-specific proof. Bing Webmaster Tools requires a signed-in account for the dashboard and sitemap submission.
+Google confirmed ownership of this URL-prefix property on 2026-11-18 via the published HTML verification file. Keep that file available at its original URL. Search Console accepted the sitemap submission. Its first report showed a fetch failure and zero discovered pages. Google’s live inspection then fetched the same URL successfully. Check the Sitemaps report for subsequent processing. Bing Webmaster Tools still requires a signed-in account for dashboard access.
 
 1. Create/select the URL-prefix property for the exact canonical project URL above.
 2. Put the actual Google or Bing meta verification token in `site.config.json` (`searchConsoleVerification` or `bingVerification`). The builder injects the public proof tag into the homepage. Do not invent tokens.
@@ -20,14 +20,14 @@ On 2026-11-18 the Google account available in the browser lacked access to this 
 
 ## Analytics choice and current status
 
-**Chosen provider: Plausible. Current production setting: disabled; no verified Plausible property is configured. The dashboard required sign-in on 2026-11-18.** There are no measured traffic or conversion numbers from this adapter yet. No paid plan was purchased and no account was created.
+The registered Plausible site is `569001773-wq.github.io`. The LyricTap website uses the Events API and sends data only after a visitor grants consent. Use the `/lyrictap-support/` page paths when investigating traffic for this project.
 
 The integration uses Plausible's Events API with opt-in consent, no tracking cookies, no arbitrary query strings and no audio/lyric content. It respects Do Not Track and Global Privacy Control. When enabled, users can grant or withdraw consent via the footer preferences dialog. The local consent preference and lyric drafts remain separate.
 
-After connecting a real Plausible account:
+When maintaining the Plausible connection:
 
-1. Add the site's real domain/property to Plausible and configure `analytics.domain` from that account. Keep endpoint `https://plausible.io/api/event`.
-2. Set `analytics.enabled: true`. Build updates the website privacy notice to the active consent-based state. Review provider terms and any applicable privacy obligations before activation.
+1. Keep `analytics.domain` aligned with the registered site and the endpoint set to `https://plausible.io/api/event`.
+2. The build selects the published website privacy notice from `analytics.enabled`. Keep the status in all three languages aligned with the production setting.
 3. Add custom-event goals with the exact names: `Editor used`, `Timeline built`, `Export generated`, `App Store click`.
 4. Configure the custom properties `language`, `page`, `format`, `campaign` in Plausible as needed for reporting.
 5. Verify real events in the dashboard. A successful HTTP response alone is not proof that the provider recorded the event.

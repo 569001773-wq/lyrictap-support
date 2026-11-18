@@ -1,7 +1,7 @@
 {
   "analytics": {
-    "enabled": false,
-    "domain": "",
+    "enabled": true,
+    "domain": "569001773-wq.github.io",
     "endpoint": "https://plausible.io/api/event"
   },
   "appleProviderToken": "129038940",

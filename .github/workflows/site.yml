@@ -4,6 +4,8 @@ on:
     branches: [main, 'codex/**']
   pull_request:
   workflow_dispatch:
+env:
+  PLAYWRIGHT_IMAGE: mcr.microsoft.com/playwright:v1.56.1-noble@sha256:f1e7e01021efd65dd1a2c56064be399f3e4de00fd021ac561325f2bfbb2b837a
 permissions:
   contents: read
 concurrency:
@@ -23,8 +25,12 @@ jobs:
       - run: npm run build
       - run: npm run check:static
       - run: npm run test:unit
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
+      - name: Run Playwright E2E
+        run: >-
+          docker run --rm --init --ipc=host --user "$(id -u):$(id -g)"
+          --env HOME=/tmp --env CI --env LIVE_BASE_URL
+          --volume "$GITHUB_WORKSPACE:/workspace" --workdir /workspace
+          "$PLAYWRIGHT_IMAGE" npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -73,8 +79,12 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: python3 site-source/scripts/audit-production.py
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
+      - name: Run Playwright E2E
+        run: >-
+          docker run --rm --init --ipc=host --user "$(id -u):$(id -g)"
+          --env HOME=/tmp --env CI --env LIVE_BASE_URL
+          --volume "$GITHUB_WORKSPACE:/workspace" --workdir /workspace
+          "$PLAYWRIGHT_IMAGE" npm run test:e2e
         env:
           LIVE_BASE_URL: https://569001773-wq.github.io
       - uses: actions/upload-artifact@v4

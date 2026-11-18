@@ -182,3 +182,11 @@ test('Japanese and Chinese home pages share the English brand palette and galler
     });
   }
 });
+
+// Keep the complete vocal + instrumental feature discoverable on the English homepage.
+test('English homepage visibly labels vocal and instrumental separation',async({page})=>{
+  await page.goto(base);
+  await expect(page.locator('#app .feature-card h3').filter({hasText:'Vocal & Instrumental Separation'})).toBeVisible();
+  await expect(page.locator('#new-features .latest-card h3').filter({hasText:'Vocal & Instrumental Separation'})).toBeVisible();
+  await expect(page.locator('#app .feature-card').filter({hasText:'Vocal & Instrumental Separation'})).toContainText('full-song sync');
+});
